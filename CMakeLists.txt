@@ -11,6 +11,10 @@ list(APPEND Game "src/Main.cpp")
 # Add source to this project's executable.
 add_executable (ParticleSystem ${Game})
 
+add_subdirectory(D3DFramework)
+
+target_link_libraries(ParticleSystem PUBLIC D3D11Framework)
+
 if (CMAKE_VERSION VERSION_GREATER 3.12)
   set_property(TARGET ParticleSystem PROPERTY CXX_STANDARD 20)
 endif()
