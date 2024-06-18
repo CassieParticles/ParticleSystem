@@ -28,9 +28,9 @@ int main()
 
 	float vertices[9] =
 	{
-		0.f,0.5f,.05f,
-		-0.5f,-0.5f,.05f,
-		0.5f,-0.5f,.05f
+		0.f,0.5f,.15f,
+		-0.5f,-0.5f,.15f,
+		0.5f,-0.5f,.15f
 	};
 	int indices[3] =
 	{
