@@ -1,7 +1,5 @@
 #include <iostream>
 
-#include "C:/program files/renderdoc/renderdoc_app.h" // or the path to your renderdoc install
-
 #include <engine/Engine/Window.h>
 
 #include <engine/D3DObjects/Device.h>
@@ -15,16 +13,6 @@ int main()
 	Window* window = Window::InitializeWindow("Test window", 800, 800);
 	Device* device = Device::Instance();
 
-
-
-	//Enable renderdoc use
-	if (HMODULE rd = GetModuleHandleA("renderdoc.dll"))
-	{
-		pRENDERDOC_GetAPI get = (pRENDERDOC_GetAPI)GetProcAddress(rd, "RENDERDOC_GetAPI");
-		RENDERDOC_API_1_0_0* rdoc = NULL;
-		get(eRENDERDOC_API_Version_1_0_0, (void**)&rdoc);
-		rdoc->SetCaptureOptionU32(eRENDERDOC_Option_DebugOutputMute, 0);
-	}
 
 	float vertices[9] =
 	{
@@ -58,7 +46,7 @@ int main()
 	{
 		window->bindRTV();
 
-		window->clearBackBuffer(DirectX::XMFLOAT4(0.2, 0.8, 0.6, 0.4));
+		window->clearBackBuffer(DirectX::XMFLOAT4(0.2, 0.4, 0.6, 0.4));
 
 
 		pipeline.bind();
