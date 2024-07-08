@@ -5,6 +5,8 @@
 #include <engine/D3DObjects/Device.h>
 #include <engine/D3DObjects/Mesh.h>
 #include <engine/D3DObjects/Pipeline/Pipeline.h>
+#include <engine/DataManagers/CBufferManager.h>
+#include <engine/D3DObjects/Pipeline/PipelineStages.h>
 
 #include <d3d11.h>
 
@@ -12,7 +14,7 @@ int main()
 {
 	Window* window = Window::InitializeWindow("Test window", 800, 800);
 	Device* device = Device::Instance();
-
+	CBufferManager* cBufferManager = CBufferManager::Instance();
 
 	float vertices[9] =
 	{
@@ -23,6 +25,11 @@ int main()
 	int indices[3] =
 	{
 		0,2,1
+	};
+
+	float offset[3] =
+	{
+		0.25f,0.0f,0.0f
 	};
 
 	Pipeline pipeline;
@@ -41,6 +48,10 @@ int main()
 	pipeline.getRastierizerDesc().CullMode = D3D11_CULL_NONE;
 
 	pipeline.compilePipeline();
+
+	cBufferManager->addBuffer("offset", offset, false, 16);
+
+	pipeline.bindConstantBuffer("offset", Shaders::VERTEX_SHADER, 0);
 
 	while (!window->getWindowShouldClose())
 	{
