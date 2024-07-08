@@ -23,7 +23,6 @@ int main()
 	CBufferManager* cBufferManager = CBufferManager::Instance();
 	TimeManager timeManager;
 
-	Input* input = Input::Instance();
 	InputActionManager* inputActionManager = InputActionManager::Instance();
 
 	int inputs[3]
@@ -35,6 +34,7 @@ int main()
 
 
 	//Set up input
+	inputActionManager->setUpdateInput();
 	inputActionManager->addInputAction("Test", inputs, 3, InputAction::RELEASE);
 
 	float vertices[9] =
@@ -86,7 +86,6 @@ int main()
 	{
 		//Update buffers
 		timeManager.Tick();
-		input->update();
 		inputActionManager->update();
 
 		if (inputActionManager->getActionTriggered("Test"))
