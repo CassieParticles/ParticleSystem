@@ -35,7 +35,7 @@ int main()
 
 	//Set up input
 	inputActionManager->setUpdateInput();
-	inputActionManager->addInputAction("Test", inputs, 3, InputAction::RELEASE);
+	inputActionManager->addInputAction("Test", inputs, 3, InputAction::DOWN_AND);
 
 	float vertices[9] =
 	{
