@@ -2,21 +2,40 @@
 
 #include <engine/Engine/Window.h>
 #include <engine/Engine/TimeManager.h>
+#include <engine/Engine/Input/Input.h>
+#include <engine/Engine/Input/InputActionManager.h>
 
 #include <engine/D3DObjects/Device.h>
 #include <engine/D3DObjects/Mesh.h>
 #include <engine/D3DObjects/Pipeline/Pipeline.h>
-#include <engine/DataManagers/CBufferManager.h>
 #include <engine/D3DObjects/Pipeline/PipelineStages.h>
 
+#include <engine/DataManagers/CBufferManager.h>
+
 #include <d3d11.h>
+#include <glfw3.h>
 
 int main()
 {
+	//Initialize singletons
 	Window* window = Window::InitializeWindow("Test window", 800, 800);
 	Device* device = Device::Instance();
 	CBufferManager* cBufferManager = CBufferManager::Instance();
 	TimeManager timeManager;
+
+	Input* input = Input::Instance();
+	InputActionManager* inputActionManager = InputActionManager::Instance();
+
+	int inputs[3]
+	{
+		GLFW_KEY_A,
+		GLFW_KEY_G,
+		GLFW_KEY_K
+	};
+
+
+	//Set up input
+	inputActionManager->addInputAction("Test", inputs, 3, InputAction::RELEASE);
 
 	float vertices[9] =
 	{
@@ -67,11 +86,16 @@ int main()
 	{
 		//Update buffers
 		timeManager.Tick();
+		input->update();
+		inputActionManager->update();
 
-		newOffset[0] = cos(timeManager.ElapsedTime()) * 0.5f;
-		newOffset[1] = sin(timeManager.ElapsedTime()) * 0.5f;
+		if (inputActionManager->getActionTriggered("Test"))
+		{
+			newOffset[0] = cos(timeManager.ElapsedTime()) * 0.5f;
+			newOffset[1] = sin(timeManager.ElapsedTime()) * 0.5f;
 
-		cBufferManager->getCBuffer("offset")->updateCBuffer(newOffset, 16);
+			cBufferManager->getCBuffer("offset")->updateCBuffer(newOffset, 16);
+		}
 
 		//Render to the screen
 		window->bindRTV();
