@@ -1,7 +1,6 @@
 struct PSInput
 {
     float4 position : SV_Position;
-    float brightness : BRIGHTNESS;
 };
 
 struct PSOutput
@@ -12,7 +11,7 @@ struct PSOutput
 PSOutput Main(PSInput input)
 {
     
-    PSOutput output = { float4(mul(float3(1, 0, 0), input.brightness), 1) };
+    PSOutput output = { float4(float3(1, 0, 0), 1) };
     
     return output;
 }

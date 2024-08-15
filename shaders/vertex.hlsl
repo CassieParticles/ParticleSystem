@@ -7,7 +7,6 @@ struct VSInput
 struct VSOutput
 {
     float4 position : SV_Position;
-    float brightness : BRIGHTNESS;
 };
 
 cbuffer offset : register(b0)
@@ -15,10 +14,9 @@ cbuffer offset : register(b0)
     float3 translation;
 }
 
-StructuredBuffer<float> brightnessBuffer : register(t0);
 
 VSOutput Main(VSInput input)
 {
-    VSOutput outData = { float4(input.position + translation, 1.0), brightnessBuffer.Load(input.vertexID) };
+    VSOutput outData = { float4(input.position + translation, 1.0) };
     return outData;
 }
