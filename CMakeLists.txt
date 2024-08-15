@@ -6,6 +6,8 @@ cmake_minimum_required (VERSION 3.8)
 
 project ("ParticleSystem")
 
+list(APPEND Game "src/ParticleManager.cpp")
+
 list(APPEND Game "src/Main.cpp")
 
 # Add source to this project's executable.

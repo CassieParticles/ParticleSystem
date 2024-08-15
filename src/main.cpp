@@ -1,4 +1,6 @@
 #include <iostream>
+#include <d3d11.h>
+#include <glfw3.h>
 
 #include <engine/Engine/Window.h>
 #include <engine/Engine/TimeManager.h>
@@ -12,107 +14,39 @@
 
 #include <engine/DataManagers/CBufferManager.h>
 
-#include <d3d11.h>
-#include <glfw3.h>
+#include "ParticleManager.h"
 
 int main()
 {
-	//Initialize singletons
+	//Initialize singletons for engine
 	Window* window = Window::InitializeWindow("Test window", 800, 800);
 	Device* device = Device::Instance();
 	CBufferManager* resourceManager = CBufferManager::Instance();
-	TimeManager timeManager;
-
 	InputActionManager* inputActionManager = InputActionManager::Instance();
 
-	int inputs[3]
-	{
-		GLFW_KEY_A,
-		GLFW_KEY_G,
-		GLFW_KEY_K
-	};
+	//Set engine parameters
+	inputActionManager->setUpdateInput();	//Set action manager to update input singleton
+	window->changeBackBufferClearColour(DirectX::XMFLOAT4(0.2, 0.4, 0.6, 1.0));	//Change default render target clear colour
 
+	//Initialize timer for main gameloop
+	TimeManager timeManager;
 
-	//Set up input
-	inputActionManager->setUpdateInput();
-	inputActionManager->addInputAction("Test", inputs, 3, InputAction::DOWN_OR);
-
-	float vertices[9] =
-	{
-		0.f,0.5f,.15f,
-		-0.5f,-0.5f,.15f,
-		0.5f,-0.5f,.15f
-	};
-	int indices[3] =
-	{
-		0,2,1
-	};
-
-	float offset[3] =
-	{
-		0.25f,0.0f,0.0f
-	};
-
-	float newOffset[3] =
-	{
-		0.0f,1.f,0.0f
-	};
-
-	float brightness[3] =
-	{
-		0.3f,0.8f,1.0f
-	};
-
-	Pipeline pipeline;
-	Mesh mesh;
-
-
-
-	mesh.addVertexBuffer(vertices, false, sizeof(vertices), 3 * sizeof(float), 0);
-	mesh.addVertexBuffer(indices, false, sizeof(indices), sizeof(int), 0);
-
-	mesh.addIndexBuffer(indices, false, sizeof(indices), 0);
-
-	pipeline.addVertexComponent({ "POSITION",0,DXGI_FORMAT_R32G32B32_FLOAT,0,0,D3D11_INPUT_PER_VERTEX_DATA,0 });
-	pipeline.addVertexComponent({ "SV_VertexID",0,DXGI_FORMAT_R32_SINT,1,0,D3D11_INPUT_PER_VERTEX_DATA,0 });
-
-	pipeline.addVertexShader(L"shaders/vertex.hlsl");
-	pipeline.addPixelShader(L"shaders/pixel.hlsl");
-
-	pipeline.setPrimitiveType(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-
-	pipeline.getRastierizerDesc().CullMode = D3D11_CULL_NONE;
-
-	pipeline.compilePipeline();
-
-	resourceManager->addBuffer("offset", offset, true, 16);
-
-	pipeline.bindConstantBuffer("offset", Shaders::VERTEX_SHADER, 0);
+	//Initialize things for particle sim
+	ParticleManager particleManager(500);
 
 	timeManager.Start();
 	while (!window->getWindowShouldClose())
 	{
-		//Update buffers
+		//Update engine objects
 		timeManager.Tick();
 		inputActionManager->update();
 
-		if (inputActionManager->getActionTriggered("Test"))
-		{
-			newOffset[0] = cos(timeManager.ElapsedTime()) * 0.5f;
-			newOffset[1] = sin(timeManager.ElapsedTime()) * 0.5f;
-
-			resourceManager->getCBuffer("offset")->updateCBuffer(newOffset, 16);
-		}
-
-		//Render to the screen
 		window->bindRTV();
+		window->clearBackBuffer();
 
-		window->clearBackBuffer(DirectX::XMFLOAT4(0.2, 0.4, 0.6, 0.4));
-
-		pipeline.bind();
-		mesh.setBuffers();
+		//Update particle manager
+		particleManager.updateParticles(&timeManager);
 		
-		device->getDeviceContext()->DrawIndexed(3, 0, 0);
 
 		window->presentBackBuffer();
 	}
