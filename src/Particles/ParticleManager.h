@@ -18,6 +18,8 @@ public:
 	~ParticleManager();
 
 	void updateParticles(TimeManager* timer);
+
+	Particle* getArray() { return particleArray; }
 protected:
 	Particle* particleArray;
 	int particleCount;

@@ -8,21 +8,24 @@
 #include <engine/Engine/Input/InputActionManager.h>
 
 #include <engine/D3DObjects/Device.h>
-#include <engine/D3DObjects/Mesh.h>
-#include <engine/D3DObjects/Pipeline/Pipeline.h>
-#include <engine/D3DObjects/Pipeline/PipelineStages.h>
 
 #include <engine/DataManagers/CBufferManager.h>
 
-#include "ParticleManager.h"
+#include "Particles/ParticleManager.h"
+#include "Particles/ParticleRenderer.h"
 
 int main()
 {
+	int windowSize[2] = { 800,800 };
+
 	//Initialize singletons for engine
-	Window* window = Window::InitializeWindow("Test window", 800, 800);
+	Window* window = Window::InitializeWindow("Test window", windowSize[0], windowSize[1]);
 	Device* device = Device::Instance();
-	CBufferManager* resourceManager = CBufferManager::Instance();
+	CBufferManager* cBufferManager = CBufferManager::Instance();
 	InputActionManager* inputActionManager = InputActionManager::Instance();
+
+
+	cBufferManager->addBuffer("WindowSize", windowSize, true, 16);
 
 	//Set engine parameters
 	inputActionManager->setUpdateInput();	//Set action manager to update input singleton
@@ -32,7 +35,8 @@ int main()
 	TimeManager timeManager;
 
 	//Initialize things for particle sim
-	ParticleManager particleManager(500);
+	ParticleManager particleManager(10);
+	ParticleRenderer particleRenderer(particleManager.getArray(),10);
 
 	timeManager.Start();
 	while (!window->getWindowShouldClose())
@@ -46,6 +50,8 @@ int main()
 
 		//Update particle manager
 		particleManager.updateParticles(&timeManager);
+
+		particleRenderer.renderParticles();
 		
 
 		window->presentBackBuffer();
