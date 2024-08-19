@@ -2,25 +2,14 @@
 
 #include <engine/D3DObjects/Device.h>
 
-ParticleRenderer::ParticleRenderer(Particle* particleArray, int particleCount):particleArray{particleArray},particleCount{particleCount}
+ParticleRenderer::ParticleRenderer(DirectX::XMFLOAT2* positions, DirectX::XMFLOAT3* colours, int particleCount) :positions{ positions },colours{colours}, particleCount{particleCount}
 {
-	DirectX::XMFLOAT2* positionArray = new DirectX::XMFLOAT2[particleCount];
-	DirectX::XMFLOAT3* colourArray = new DirectX::XMFLOAT3[particleCount];
-
-	for (int i = 0; i < particleCount; ++i)
-	{
-		positionArray[i] = particleArray[i].position;
-		colourArray[i] = particleArray[i].colour;
-	}
-
 	particlesMesh.addVertexBuffer(static_cast<void*>(vertexPositions), false, sizeof(vertexPositions), sizeof(DirectX::XMFLOAT2), 0);
-	particlesMesh.addVertexBuffer(static_cast<void*>(positionArray), false, sizeof(DirectX::XMFLOAT2) * particleCount, sizeof(DirectX::XMFLOAT2), 0);
-	particlesMesh.addVertexBuffer(static_cast<void*>(colourArray), false, sizeof(DirectX::XMFLOAT3) * particleCount, sizeof(DirectX::XMFLOAT3), 0);
+	particlesMesh.addVertexBuffer(static_cast<void*>(positions), true, sizeof(DirectX::XMFLOAT2) * particleCount, sizeof(DirectX::XMFLOAT2), 0);
+	particlesMesh.addVertexBuffer(static_cast<void*>(colours), false, sizeof(DirectX::XMFLOAT3) * particleCount, sizeof(DirectX::XMFLOAT3), 0);
 
 	particlesMesh.addIndexBuffer(indices,false,sizeof(indices), 0);
-	
-	delete[] positionArray;
-	delete[] colourArray;
+
 
 	//Add shaders to pipeline
 	particlePipeline.addVertexShader(L"shaders/vertex.hlsl");
@@ -47,9 +36,22 @@ ParticleRenderer::~ParticleRenderer()
 
 }
 
+void ParticleRenderer::updateParticlePositions()
+{
+	Microsoft::WRL::ComPtr<ID3D11Buffer>& positionBuffer = particlesMesh.getVertexBuffer(1);
+
+	Device* device = Device::Instance();
+	D3D11_MAPPED_SUBRESOURCE map;
+
+	device->getDeviceContext()->Map(positionBuffer.Get(), 0, D3D11_MAP_WRITE_DISCARD, 0, &map);
+	memcpy(map.pData, positions, particleCount * sizeof(DirectX::XMFLOAT2));
+	device->getDeviceContext()->Unmap(positionBuffer.Get(), 0);
+}
+
 void ParticleRenderer::renderParticles()
 {
-	//TODO: Update isntancePosition buffer to new data
+	//TODO: Update instancePosition buffer to new data
+	updateParticlePositions();
 
 	particlesMesh.setBuffers();
 

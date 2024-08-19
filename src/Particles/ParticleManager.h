@@ -19,8 +19,13 @@ public:
 
 	void updateParticles(TimeManager* timer);
 
-	Particle* getArray() { return particleArray; }
+	DirectX::XMFLOAT2* getPositionArray() { return particlePositionArray; }
+	DirectX::XMFLOAT2* getVelocityArray() { return particleVelocityArray; }
+	DirectX::XMFLOAT3* getColourArray() { return particleColourArray; }
 protected:
-	Particle* particleArray;
+	DirectX::XMFLOAT2* particlePositionArray;
+	DirectX::XMFLOAT2* particleVelocityArray;
+	DirectX::XMFLOAT3* particleColourArray;
+
 	int particleCount;
 };

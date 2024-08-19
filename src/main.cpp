@@ -35,8 +35,10 @@ int main()
 	TimeManager timeManager;
 
 	//Initialize things for particle sim
-	ParticleManager particleManager(10);
-	ParticleRenderer particleRenderer(particleManager.getArray(),10);
+	constexpr int particleCount = 100;
+
+	ParticleManager particleManager(particleCount);
+	ParticleRenderer particleRenderer(particleManager.getPositionArray(),particleManager.getColourArray(), particleCount);
 
 	timeManager.Start();
 	while (!window->getWindowShouldClose())
