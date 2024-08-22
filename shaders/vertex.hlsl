@@ -20,14 +20,16 @@ cbuffer WindowSize : register(b0)
 cbuffer ParticleData : register(b1)
 {
     int particleSize;
+    int pixelsPerUnit;
 };
 
 VSOutput Main(VSInput input)
 {
     VSOutput data;
     
-    float2 vertexPosition = input.vertexPosition * particleSize + input.instancePosition;   //Gets size between 0->WindowSize
+    float2 vertexPosition = input.vertexPosition * particleSize + input.instancePosition * pixelsPerUnit;   //Gets size between 0->WindowSize
     float2 invSize = float2(1.0 / width, 1.0 / height);
+    //float2 pixelsToUnitScale = float2(1.0 / pixelsPerUnit, 1.0 / pixelsPerUnit);
     
     vertexPosition *= invSize;  //Scales position to be between 0->1
     

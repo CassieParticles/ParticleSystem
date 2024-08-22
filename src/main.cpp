@@ -35,7 +35,7 @@ int main()
 	TimeManager timeManager;
 
 	//Initialize things for particle sim
-	constexpr int particleCount = 100;
+	constexpr int particleCount = 500;
 
 	ParticleManager particleManager(particleCount);
 	ParticleRenderer particleRenderer(particleManager.getPositionArray(),particleManager.getColourArray(), particleCount);
