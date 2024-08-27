@@ -8,6 +8,7 @@ project ("ParticleSystem")
 
 list(APPEND Game "src/Particles/ParticleManager.cpp")
 list(APPEND Game "src/Particles/ParticleRenderer.cpp")
+list(APPEND Game "src/Particles/ParticleEmitter.cpp")
 
 list(APPEND Game "src/Main.cpp")
 

@@ -6,6 +6,7 @@
 #include <engine/Engine/TimeManager.h>
 #include <engine/Engine/Input/Input.h>
 #include <engine/Engine/Input/InputActionManager.h>
+#include <engine/Engine/Delay.h>
 
 #include <engine/D3DObjects/Device.h>
 
@@ -13,6 +14,7 @@
 
 #include "Particles/ParticleManager.h"
 #include "Particles/ParticleRenderer.h"
+#include "Particles/ParticleEmitter.h"
 
 int main()
 {
@@ -24,6 +26,7 @@ int main()
 	CBufferManager* cBufferManager = CBufferManager::Instance();
 	InputActionManager* inputActionManager = InputActionManager::Instance();
 
+	
 
 	cBufferManager->addBuffer("WindowSize", windowSize, true, 16);
 
@@ -33,6 +36,7 @@ int main()
 
 	//Initialize timer for main gameloop
 	TimeManager timeManager;
+	timeManager.setUniversalTimeManager();
 
 	//Initialize things for particle sim
 	constexpr int particleCount = 500;
@@ -40,7 +44,11 @@ int main()
 	ParticleManager particleManager(particleCount);
 	ParticleRenderer particleRenderer(particleManager.getPositionArray(),particleManager.getColourArray(), particleCount);
 
+	ParticleEmitter particleEmitter(0.25, 2, 3, DirectX::XMFLOAT3(1, 0, 0));
+
 	timeManager.Start();
+
+
 	while (!window->getWindowShouldClose())
 	{
 		//Update engine objects
