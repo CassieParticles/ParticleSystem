@@ -31,15 +31,9 @@ ParticleManager::ParticleManager(int particleCount):particleCount{particleCount}
 		particleColourArray[i] = colour;
 	}
 
-	int particleSize = 4;	//4 bytes
-	int pixelsPerUnit = 100;	//4 bytes
 
-	char data[16];
 
-	memcpy(data, &particleSize, 4);
-	memcpy(data + 4, &pixelsPerUnit, 4);
 
-	CBufferManager::Instance()->addBuffer("ParticleData", data, false, 16);
 }
 
 ParticleManager::~ParticleManager()
