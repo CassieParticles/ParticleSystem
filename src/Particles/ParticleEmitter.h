@@ -17,16 +17,25 @@ public:
 	~ParticleEmitter();
 
 	void render();
-	void update();
+	void update(TimeManager* timeManager);
+
+	void setAngle(float angle) { this->angle = angle; }
+	void setSpread(float spread) { this->spread = spread; }
 protected:
 
 	//Variables for particle simulation
 	DirectX::XMFLOAT2* particlePositions;
 	DirectX::XMFLOAT2* particleVelocities;
 	int particleCount;
+	float invParticleCount;
 	Timer emmisionTimer;
 	DirectX::XMFLOAT2 position;
 	float particleSpeed;
+	int currentParticleReset{ 0 };	//Used to reset particles once they've outlived their time
+	bool firstIteration{ false };	//Used to selectively not render particles on first iteration so they aren't emmited
+	float angle = 0;
+	float spread = 2 * 3.14159f;
+	//TODO: make better way to stop rendering particles
 
 	//Objects needed for rendering
 	ComPtr<ID3D11Buffer> vertexPositions;

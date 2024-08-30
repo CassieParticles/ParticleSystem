@@ -3,10 +3,15 @@
 #include <iostream>
 #include <engine/D3DObjects/Device.h>
 
-ParticleEmitter::ParticleEmitter(DirectX::XMFLOAT2 position, float interval, float particleLifeTime, float particleSpeed, DirectX::XMFLOAT3 colour) :emmisionTimer{interval}, particleSpeed{particleSpeed}
+#include <engine/Engine/VectorMathOverloads.h>
+
+#include <engine/Engine/Random.h>
+
+ParticleEmitter::ParticleEmitter(DirectX::XMFLOAT2 position, float interval, float particleLifeTime, float particleSpeed, DirectX::XMFLOAT3 colour) :position{ position },emmisionTimer { interval }, particleSpeed{ particleSpeed }
 {
 	//Get the maximum number of particles
 	particleCount = ceil(particleLifeTime / interval);
+	invParticleCount = 1.f / particleCount;
 
 	//Create the arrays to store particle positions and velocities
 	particlePositions = new DirectX::XMFLOAT2[particleCount];
@@ -14,10 +19,13 @@ ParticleEmitter::ParticleEmitter(DirectX::XMFLOAT2 position, float interval, flo
 
 	DirectX::XMFLOAT3* particleColours = new DirectX::XMFLOAT3[particleCount];
 
+	float inv = 1.f / particleCount;
+
 	for (int i = 0; i < particleCount; ++i)
 	{
-		particlePositions[i] = DirectX::XMFLOAT2(position);
-		particleColours[i] = DirectX::XMFLOAT3(colour);
+		particlePositions[i] = DirectX::XMFLOAT2{ position };
+		particleColours[i] = DirectX::XMFLOAT3{ colour };
+		particleVelocities[i] = DirectX::XMFLOAT2{ 0,0 };
 	}
 
 	//Structures used to make buffers
@@ -125,10 +133,52 @@ void ParticleEmitter::render()
 	Device::Instance()->getDeviceContext()->IASetVertexBuffers(0, 3, buffers, strides, offsets);
 	Device::Instance()->getDeviceContext()->IASetIndexBuffer(vertexIndices.Get(), DXGI_FORMAT_R32_UINT, 0);
 
-	Device::Instance()->getDeviceContext()->DrawIndexedInstanced(6, particleCount, 0, 0, 0);
+	//Render different amount if on first iteration so it isn't rendering particles that aren't moving yet
+	Device::Instance()->getDeviceContext()->DrawIndexedInstanced(6, firstIteration ? particleCount : currentParticleReset, 0, 0, 0);
 }
 
-void ParticleEmitter::update()
+void ParticleEmitter::update(TimeManager* timeManager)
 {
+	emmisionTimer.Tick();
+	
+	//"Emit" a new particle, really, it resets an old one
+	if (emmisionTimer.isEnabled())
+	{
+		//Reset particle
+		//float angle = currentParticleReset * invParticleCount * 2 * 3.14159;	//Temporary, will make random angle possible
+		float firingAngle = Random::Instance()->genRand() * spread + this->angle;
+		particlePositions[currentParticleReset] = position;
+		particleVelocities[currentParticleReset] = DirectX::XMFLOAT2{cos(firingAngle),sin(firingAngle)};
+		currentParticleReset++;
 
+		//Check if counter needs to be wrapped around
+		if (currentParticleReset >= particleCount)
+		{
+			firstIteration = true;
+			currentParticleReset = 0;
+		}
+	}
+
+	//TODO: change this to compute shader for larger particle simulation
+	for (int i = 0; i < particleCount; ++i)
+	{
+		//Load vectors into XMVECTORs for faster calculation and to use overloads
+		DirectX::XMVECTOR velocity = DirectX::XMLoadFloat2(particleVelocities + i);
+		DirectX::XMVECTOR position = DirectX::XMLoadFloat2(particlePositions + i);
+
+		//Do maths
+		position += velocity * timeManager->DeltaTime();
+
+		//Store vectors back into arrays
+		DirectX::XMStoreFloat2(particleVelocities + i, velocity);
+		DirectX::XMStoreFloat2(particlePositions + i, position);
+	}
+
+
+	//Update vertex instance buffer
+	
+	D3D11_MAPPED_SUBRESOURCE mapped;
+	Device::Instance()->getDeviceContext()->Map(instancePositions.Get(), 0, D3D11_MAP_WRITE_DISCARD, 0, &mapped);
+	memcpy(mapped.pData, particlePositions, particleCount * sizeof(DirectX::XMFLOAT2));
+	Device::Instance()->getDeviceContext()->Unmap(instancePositions.Get(), 0);
 }

@@ -7,6 +7,7 @@
 #include <engine/Engine/Input/Input.h>
 #include <engine/Engine/Input/InputActionManager.h>
 #include <engine/Engine/Delay.h>
+#include <engine/Engine/Random.h>
 
 #include <engine/D3DObjects/Device.h>
 
@@ -25,8 +26,8 @@ int main()
 	Device* device = Device::Instance();
 	CBufferManager* cBufferManager = CBufferManager::Instance();
 	InputActionManager* inputActionManager = InputActionManager::Instance();
-
-	
+	Random* random = Random::Instance();
+	random->setSeed(time(0));
 
 	cBufferManager->addBuffer("WindowSize", windowSize, true, 16);
 
@@ -43,11 +44,14 @@ int main()
 
 	ParticleManager particleManager(particleCount);
 
-	ParticleEmitter particleEmitter(DirectX::XMFLOAT2(4,4),0.25, 2, 3, DirectX::XMFLOAT3(1, 0, 0));
+	ParticleEmitter particleEmitter(DirectX::XMFLOAT2(4,4),0.1, 3, 3, DirectX::XMFLOAT3(1, 0, 0));
 
 	ParticleRenderer particleRenderer{};
 
 	timeManager.Start();
+
+	particleEmitter.setAngle(3.14159 / 2);
+	particleEmitter.setSpread(3.14159 / 4);
 
 
 	while (!window->getWindowShouldClose())
@@ -64,6 +68,7 @@ int main()
 
 		particleRenderer.bindPipeline();
 
+		particleEmitter.update(&timeManager);
 		particleEmitter.render();
 		
 
