@@ -10,6 +10,7 @@
 #include <engine/Engine/Random.h>
 
 #include <engine/D3DObjects/Device.h>
+#include <engine/D3DObjects/Pipeline/RenderScreen.h>
 
 #include <engine/DataManagers/CBufferManager.h>
 
@@ -27,6 +28,8 @@ int main()
 	CBufferManager* cBufferManager = CBufferManager::Instance();
 	InputActionManager* inputActionManager = InputActionManager::Instance();
 	Random* random = Random::Instance();
+	RenderScreen* renderScreen = RenderScreen::Instance();
+
 	random->setSeed(time(0));
 
 	cBufferManager->addBuffer("WindowSize", windowSize, true, 16);
