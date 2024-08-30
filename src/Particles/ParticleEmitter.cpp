@@ -146,7 +146,7 @@ void ParticleEmitter::update(TimeManager* timeManager)
 	{
 		//Reset particle
 		//float angle = currentParticleReset * invParticleCount * 2 * 3.14159;	//Temporary, will make random angle possible
-		float firingAngle = Random::Instance()->genRand() * spread + this->angle;
+		float firingAngle = (Random::Instance()->genRand()-0.5f) * spread + this->angle;
 		particlePositions[currentParticleReset] = position;
 		particleVelocities[currentParticleReset] = DirectX::XMFLOAT2{cos(firingAngle),sin(firingAngle)};
 		currentParticleReset++;
