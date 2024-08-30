@@ -42,9 +42,10 @@ int main()
 	constexpr int particleCount = 500;
 
 	ParticleManager particleManager(particleCount);
-	ParticleRenderer particleRenderer(particleManager.getPositionArray(),particleManager.getColourArray(), particleCount);
 
-	ParticleEmitter particleEmitter(0.25, 2, 3, DirectX::XMFLOAT3(1, 0, 0));
+	ParticleEmitter particleEmitter(DirectX::XMFLOAT2(4,4),0.25, 2, 3, DirectX::XMFLOAT3(1, 0, 0));
+
+	ParticleRenderer particleRenderer{};
 
 	timeManager.Start();
 
@@ -61,7 +62,9 @@ int main()
 		//Update particle manager
 		particleManager.updateParticles(&timeManager);
 
-		particleRenderer.renderParticles();
+		particleRenderer.bindPipeline();
+
+		particleEmitter.render();
 		
 
 		window->presentBackBuffer();

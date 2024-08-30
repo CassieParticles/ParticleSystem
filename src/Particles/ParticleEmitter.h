@@ -13,14 +13,19 @@ class ParticleEmitter
 	template <typename T>
 	using ComPtr = Microsoft::WRL::ComPtr<T>;
 public:
-	ParticleEmitter(float interval, float particleLifeTime, float particleSpeed, DirectX::XMFLOAT3 colour);
+	ParticleEmitter(DirectX::XMFLOAT2 position, float interval, float particleLifeTime, float particleSpeed, DirectX::XMFLOAT3 colour);
 	~ParticleEmitter();
+
+	void render();
+	void update();
 protected:
+
 	//Variables for particle simulation
 	DirectX::XMFLOAT2* particlePositions;
 	DirectX::XMFLOAT2* particleVelocities;
 	int particleCount;
 	Timer emmisionTimer;
+	DirectX::XMFLOAT2 position;
 	float particleSpeed;
 
 	//Objects needed for rendering
@@ -28,6 +33,7 @@ protected:
 	ComPtr<ID3D11Buffer> vertexIndices;
 
 	ComPtr<ID3D11Buffer> instancePositions;
+	ComPtr<ID3D11Buffer> instanceColours;
 
 	//Constants for vertices
 	static constexpr float vertexPos[8]

@@ -26,37 +26,10 @@ class ParticleRenderer
 	template <typename T>
 	using ComPtr = Microsoft::WRL::ComPtr<T>;
 public:
-	ParticleRenderer(DirectX::XMFLOAT2* positions, DirectX::XMFLOAT3* colours, int particleCount);
+	ParticleRenderer();
 	~ParticleRenderer();
 
-	//Call to udpate positions in renderer
-	void updateParticlePositions();
-
-	void renderParticles();
+	void bindPipeline();
 protected:
-	//Used to render particles
-	DirectX::XMFLOAT2* positions;
-	DirectX::XMFLOAT3* colours;
-
-	int particleCount;
-	
-	//Mesh for all particles
-	Mesh particlesMesh;
-
-	//Render pipeline for particles
 	Pipeline particlePipeline;
-
-	float vertexPositions[8]
-	{
-		0,0,
-		0,1,
-		1,0,
-		1,1
-	};
-
-	int indices[6]
-	{
-		0,1,3,
-		0,3,2
-	};
 };
