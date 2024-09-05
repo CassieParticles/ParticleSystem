@@ -52,6 +52,8 @@ int main()
 
 	ParticleRenderer particleRenderer{};
 
+	
+
 	timeManager.Start();
 
 	particleEmitter.setAngle(0);
@@ -60,13 +62,40 @@ int main()
 	particleEmitter2.setAngle(3.14159);
 	particleEmitter2.setSpread(3.14159 / 4);
 
+	RenderTarget testTarget{};
+
+	D3D11_TEXTURE2D_DESC texDesc{};
+	texDesc.Width = 1024;
+	texDesc.Height = 1024;
+	texDesc.MipLevels = 0;
+	texDesc.ArraySize = 1;
+	texDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
+	texDesc.SampleDesc.Count = 1;
+	texDesc.SampleDesc.Quality = 0;
+	texDesc.Usage = D3D11_USAGE_DEFAULT;
+	texDesc.BindFlags = D3D11_BIND_SHADER_RESOURCE | D3D11_BIND_RENDER_TARGET;
+	texDesc.CPUAccessFlags = 0;
+	texDesc.MiscFlags = D3D11_RESOURCE_MISC_GENERATE_MIPS;
+
+	Microsoft::WRL::ComPtr<ID3D11Texture2D> tex2D;
+
+	HRESULT err = device->getDevice()->CreateTexture2D(&texDesc, nullptr, &tex2D);
+	if (FAILED(err))
+	{
+		std::cerr << "Failed to create texture\n";
+	}
+
+	testTarget.addRTV(tex2D, DXGI_FORMAT_R8G8B8A8_UNORM, DirectX::XMFLOAT4(0.2, 0.4, 0.6, 1.0), true);
+
 	while (!window->getWindowShouldClose())
 	{
 		//Update engine objects
 		timeManager.Tick();
 		inputActionManager->update();
 
-		window->bindRTV();
+
+		//window->bindRTV();
+		testTarget.clear();
 		window->clearBackBuffer();
 
 		//Update particle manager
@@ -74,10 +103,14 @@ int main()
 		particleEmitter.update(&timeManager);
 		particleEmitter2.update(&timeManager);
 
+		testTarget.bind();
+
 		particleRenderer.bindPipeline();
 
 		particleEmitter.render();
 		particleEmitter2.render();
+
+		window->bindRTV();
 		
 
 		window->presentBackBuffer();
