@@ -112,6 +112,7 @@ int main()
 
 		window->bindRTV();
 		
+		renderScreen->Instance()->renderTexture(testTarget.getRenderTargetSRV(0));
 
 		window->presentBackBuffer();
 	}
