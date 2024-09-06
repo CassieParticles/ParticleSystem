@@ -62,7 +62,7 @@ int main()
 	particleEmitter2.setAngle(3.14159);
 	particleEmitter2.setSpread(3.14159 / 4);
 
-	RenderTarget testTarget{};
+	RenderTarget testTarget{  };
 
 	D3D11_TEXTURE2D_DESC texDesc{};
 	texDesc.Width = 1024;
@@ -86,6 +86,7 @@ int main()
 	}
 
 	testTarget.addRTV(tex2D, DXGI_FORMAT_R8G8B8A8_UNORM, DirectX::XMFLOAT4(0.2, 0.4, 0.6, 1.0), true);
+	testTarget.changeViewport({ 0,0,1024,1024,0,1 });
 
 	while (!window->getWindowShouldClose())
 	{
