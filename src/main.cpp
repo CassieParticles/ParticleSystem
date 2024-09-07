@@ -28,7 +28,7 @@ int main()
 	CBufferManager* cBufferManager = CBufferManager::Instance();
 	InputActionManager* inputActionManager = InputActionManager::Instance();
 	Random* random = Random::Instance();
-	RenderScreen* renderScreen = RenderScreen::Instance();
+	
 
 	random->setSeed(time(0));
 
@@ -45,7 +45,7 @@ int main()
 	//Initialize things for particle sim
 	constexpr int particleCount = 500;
 
-	ParticleManager particleManager(particleCount);
+	//ParticleManager particleManager(particleCount);
 
 	ParticleEmitter particleEmitter(DirectX::XMFLOAT2(4,4),0.1, 3, 3, DirectX::XMFLOAT3(1, 0, 0));
 	ParticleEmitter particleEmitter2(DirectX::XMFLOAT2(6, 4), 0.2, 5, 2, DirectX::XMFLOAT3(0, 1, 0));
@@ -79,6 +79,8 @@ int main()
 
 	Microsoft::WRL::ComPtr<ID3D11Texture2D> tex2D;
 
+	RenderScreen renderScreen{L"shaders/PostProcessing/Dissipate.hlsl"};
+
 	HRESULT err = device->getDevice()->CreateTexture2D(&texDesc, nullptr, &tex2D);
 	if (FAILED(err))
 	{
@@ -100,7 +102,7 @@ int main()
 		window->clearBackBuffer();
 
 		//Update particle manager
-		particleManager.updateParticles(&timeManager);
+		//particleManager.updateParticles(&timeManager);
 		particleEmitter.update(&timeManager);
 		particleEmitter2.update(&timeManager);
 
@@ -113,7 +115,7 @@ int main()
 
 		window->bindRTV();
 		
-		renderScreen->Instance()->renderTexture(testTarget.getRenderTargetSRV(0));
+		renderScreen.renderTexture(testTarget.getRenderTargetSRV(0));
 
 		window->presentBackBuffer();
 	}
