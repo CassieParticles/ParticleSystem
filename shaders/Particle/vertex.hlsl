@@ -23,6 +23,11 @@ cbuffer ParticleData : register(b1)
     int pixelsPerUnit;
 };
 
+cbuffer Timer : register(b2)
+{
+    
+}
+
 VSOutput Main(VSInput input)
 {
     VSOutput data;

@@ -14,9 +14,9 @@
 
 #include <engine/DataManagers/CBufferManager.h>
 
-#include "Particles/ParticleManager.h"
 #include "Particles/ParticleRenderer.h"
 #include "Particles/ParticleEmitter.h"
+#include "Particles/PostProcessingEffect.h"
 
 int main()
 {
@@ -31,8 +31,10 @@ int main()
 	
 
 	random->setSeed(time(0));
+	float timeData[2] = {0,0};
 
 	cBufferManager->addBuffer("WindowSize", windowSize, true, 16);
+	cBufferManager->addBuffer("Timer", timeData, true, 16);
 
 	//Set engine parameters
 	inputActionManager->setUpdateInput();	//Set action manager to update input singleton
@@ -42,17 +44,12 @@ int main()
 	TimeManager timeManager;
 	timeManager.setUniversalTimeManager();
 
-	//Initialize things for particle sim
-	constexpr int particleCount = 500;
-
-	//ParticleManager particleManager(particleCount);
-
 	ParticleEmitter particleEmitter(DirectX::XMFLOAT2(4,4),0.1, 3, 3, DirectX::XMFLOAT3(1, 0, 0));
 	ParticleEmitter particleEmitter2(DirectX::XMFLOAT2(6, 4), 0.2, 5, 2, DirectX::XMFLOAT3(0, 1, 0));
 
 	ParticleRenderer particleRenderer{};
 
-	
+	PostProcessingEffect postProcess{};
 
 	timeManager.Start();
 
@@ -87,7 +84,7 @@ int main()
 		std::cerr << "Failed to create texture\n";
 	}
 
-	testTarget.addRTV(tex2D, DXGI_FORMAT_R8G8B8A8_UNORM, DirectX::XMFLOAT4(0.2, 0.4, 0.6, 1.0), true);
+	testTarget.addRTV(tex2D, DXGI_FORMAT_R8G8B8A8_UNORM, DirectX::XMFLOAT4{0.2, 0.4, 0.6, 1.0}, true);
 	testTarget.changeViewport({ 0,0,1024,1024,0,1 });
 
 	while (!window->getWindowShouldClose())
@@ -96,26 +93,27 @@ int main()
 		timeManager.Tick();
 		inputActionManager->update();
 
-
-		//window->bindRTV();
-		testTarget.clear();
+		//
+		window->bindRTV();
 		window->clearBackBuffer();
 
-		//Update particle manager
-		//particleManager.updateParticles(&timeManager);
+		//Update emitters
 		particleEmitter.update(&timeManager);
 		particleEmitter2.update(&timeManager);
 
-		testTarget.bind();
 
+		//swaps textures and handles rendering of 
+		postProcess.doEffect();
+
+		//Render particles to render target in postProcess
 		particleRenderer.bindPipeline();
-
 		particleEmitter.render();
 		particleEmitter2.render();
 
 		window->bindRTV();
-		
-		renderScreen.renderTexture(testTarget.getRenderTargetSRV(0));
+		postProcess.render();
+
+		//renderScreen.renderTexture(testTarget.getRenderTargetSRV(0));
 
 		window->presentBackBuffer();
 	}

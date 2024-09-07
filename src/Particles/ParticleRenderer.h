@@ -6,8 +6,6 @@
 #include <engine/D3DObjects/Mesh.h>
 #include <engine/D3DObjects/Pipeline/Pipeline.h>
 
-#include "ParticleManager.h"
-
 /*Full render process
 	-Update vertex buffer with particle positions
 	-Bind separate render target
