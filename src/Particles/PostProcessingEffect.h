@@ -20,6 +20,8 @@ public:
 	PostProcessingEffect();
 	~PostProcessingEffect() = default;
 
+	void renderInitialTexture(ComPtr<ID3D11ShaderResourceView>& SRV);
+
 	void doEffect();
 
 	void render();

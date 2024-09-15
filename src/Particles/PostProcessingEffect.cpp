@@ -43,6 +43,13 @@ PostProcessingEffect::PostProcessingEffect():ppEffect{ L"shaders/PostProcessing/
 	ppEffect.getPipeline().bindConstantBuffer("Timer",Shaders::VERTEX_SHADER,0);
 }
 
+void PostProcessingEffect::renderInitialTexture(ComPtr<ID3D11ShaderResourceView>& SRV)
+{
+	renderTargets[1-writeTexture].bind();
+
+	renderScreen.renderTexture(SRV);
+}
+
 void PostProcessingEffect::doEffect()
 {
 	renderTargets[writeTexture].clear();

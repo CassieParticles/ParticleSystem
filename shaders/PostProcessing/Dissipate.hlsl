@@ -22,8 +22,8 @@ PSOutput Main(PSInput input)
 {
     float offset = 1.0 / 800;
     float kernel[9] = { 
-            2,2,2,
-            1,4,1,
+            1,1,1,
+            1,3,1,
             1,1,1
         };
     
@@ -41,7 +41,7 @@ PSOutput Main(PSInput input)
     
     float4 sumColour = float4(0,0,0,0);
     float sumValue = 0;
-    float4 magnitude = 1;
+    float4 magnitude = 1.0;
     
     [unroll]
     for (int i = 0; i < 9;++i)

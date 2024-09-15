@@ -13,6 +13,7 @@
 #include <engine/D3DObjects/Pipeline/RenderScreen.h>
 
 #include <engine/DataManagers/CBufferManager.h>
+#include <engine/DataManagers/AssetLoader.h>
 
 #include "Particles/ParticleRenderer.h"
 #include "Particles/ParticleEmitter.h"
@@ -28,7 +29,9 @@ int main()
 	CBufferManager* cBufferManager = CBufferManager::Instance();
 	InputActionManager* inputActionManager = InputActionManager::Instance();
 	Random* random = Random::Instance();
+	AssetLoader* assetLoader = AssetLoader::Instance();
 	
+	assetLoader->getTexture("assets/bunny.png");
 
 	random->setSeed(time(0));
 	float timeData[2] = {0,0};
@@ -59,33 +62,8 @@ int main()
 	particleEmitter2.setAngle(3.14159);
 	particleEmitter2.setSpread(3.14159 / 4);
 
-	RenderTarget testTarget{  };
+	postProcess.renderInitialTexture(assetLoader->getTexture("assets/bunny.png")->getSRV());
 
-	D3D11_TEXTURE2D_DESC texDesc{};
-	texDesc.Width = 1024;
-	texDesc.Height = 1024;
-	texDesc.MipLevels = 0;
-	texDesc.ArraySize = 1;
-	texDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
-	texDesc.SampleDesc.Count = 1;
-	texDesc.SampleDesc.Quality = 0;
-	texDesc.Usage = D3D11_USAGE_DEFAULT;
-	texDesc.BindFlags = D3D11_BIND_SHADER_RESOURCE | D3D11_BIND_RENDER_TARGET;
-	texDesc.CPUAccessFlags = 0;
-	texDesc.MiscFlags = D3D11_RESOURCE_MISC_GENERATE_MIPS;
-
-	Microsoft::WRL::ComPtr<ID3D11Texture2D> tex2D;
-
-	RenderScreen renderScreen{L"shaders/PostProcessing/Dissipate.hlsl"};
-
-	HRESULT err = device->getDevice()->CreateTexture2D(&texDesc, nullptr, &tex2D);
-	if (FAILED(err))
-	{
-		std::cerr << "Failed to create texture\n";
-	}
-
-	testTarget.addRTV(tex2D, DXGI_FORMAT_R8G8B8A8_UNORM, DirectX::XMFLOAT4{0.2, 0.4, 0.6, 1.0}, true);
-	testTarget.changeViewport({ 0,0,1024,1024,0,1 });
 
 	while (!window->getWindowShouldClose())
 	{
@@ -112,8 +90,6 @@ int main()
 
 		window->bindRTV();
 		postProcess.render();
-
-		//renderScreen.renderTexture(testTarget.getRenderTargetSRV(0));
 
 		window->presentBackBuffer();
 	}
