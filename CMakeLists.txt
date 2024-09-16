@@ -13,8 +13,14 @@ list(APPEND Game "src/Particles/ParticleManager.cpp")
 
 list(APPEND Game "src/Main.cpp")
 
+
 # Add source to this project's executable.
-add_executable (ParticleSystem ${Game})
+if(CMAKE_BUILD_TYPE MATCHES "Debug")
+	add_executable (ParticleSystem ${Game})
+else()
+	add_executable(ParticleSystem WIN32 ${Game})
+endif()
+
 
 add_subdirectory(D3DFramework)
 
@@ -36,3 +42,4 @@ add_dependencies(ParticleSystem copyShaders)
 add_dependencies(ParticleSystem copyAssets)
 
 # TODO: Add tests and install targets if needed.
+

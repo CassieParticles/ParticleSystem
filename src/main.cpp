@@ -20,7 +20,11 @@
 #include "Particles/PostProcessingEffect.h"
 #include "Particles/ParticleManager.h"
 
+#ifdef RELEASE
+int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE prevInstance, LPWSTR cmdLine, int cmdShow)
+#else
 int main()
+#endif
 {
 	int windowSize[2] = { 800,800 };
 
