@@ -16,8 +16,9 @@
 #include <engine/DataManagers/AssetLoader.h>
 
 #include "Particles/ParticleRenderer.h"
-#include "Particles/ParticleEmitter.h"
+#include "Particles/ParticleStream.h"
 #include "Particles/PostProcessingEffect.h"
+#include "Particles/ParticleManager.h"
 
 int main()
 {
@@ -30,8 +31,6 @@ int main()
 	InputActionManager* inputActionManager = InputActionManager::Instance();
 	Random* random = Random::Instance();
 	AssetLoader* assetLoader = AssetLoader::Instance();
-	
-	assetLoader->getTexture("assets/bunny.png");
 
 	random->setSeed(time(0));
 	float timeData[2] = {0,0};
@@ -39,6 +38,7 @@ int main()
 	cBufferManager->addBuffer("WindowSize", windowSize, true, 16);
 	cBufferManager->addBuffer("Timer", timeData, true, 16);
 
+	ParticleManager particleManager{};
 	//Set engine parameters
 	inputActionManager->setUpdateInput();	//Set action manager to update input singleton
 	window->changeBackBufferClearColour(DirectX::XMFLOAT4(0.2, 0.4, 0.6, 1.0));	//Change default render target clear colour
@@ -47,23 +47,15 @@ int main()
 	TimeManager timeManager;
 	timeManager.setUniversalTimeManager();
 
-	ParticleEmitter particleEmitter(DirectX::XMFLOAT2(4,4),0.1, 3, 3, DirectX::XMFLOAT3(1, 0, 0));
-	ParticleEmitter particleEmitter2(DirectX::XMFLOAT2(6, 4), 0.2, 5, 2, DirectX::XMFLOAT3(0, 1, 0));
+	
 
-	ParticleRenderer particleRenderer{};
 
-	PostProcessingEffect postProcess{};
+	particleManager.addParticleStream(DirectX::XMFLOAT2(4, 4), 0, 3.14159 / 4, 0.1, 3, 3, DirectX::XMFLOAT3(1, 0, 0));
+	particleManager.addParticleStream(DirectX::XMFLOAT2(6, 4), 3.14159, 3.14159 / 4, 0.2, 5, 2, DirectX::XMFLOAT3(0, 1, 0));
 
 	timeManager.Start();
 
-	particleEmitter.setAngle(0);
-	particleEmitter.setSpread(3.14159 / 4);
-
-	particleEmitter2.setAngle(3.14159);
-	particleEmitter2.setSpread(3.14159 / 4);
-
-	postProcess.renderInitialTexture(assetLoader->getTexture("assets/bunny.png")->getSRV());
-
+	particleManager.init("assets/bunny.png");
 
 	while (!window->getWindowShouldClose())
 	{
@@ -75,21 +67,9 @@ int main()
 		window->bindRTV();
 		window->clearBackBuffer();
 
-		//Update emitters
-		particleEmitter.update(&timeManager);
-		particleEmitter2.update(&timeManager);
+		particleManager.update(&timeManager);
 
-
-		//swaps textures and handles rendering of 
-		postProcess.doEffect();
-
-		//Render particles to render target in postProcess
-		particleRenderer.bindPipeline();
-		particleEmitter.render();
-		particleEmitter2.render();
-
-		window->bindRTV();
-		postProcess.render();
+		particleManager.render();
 
 		window->presentBackBuffer();
 	}

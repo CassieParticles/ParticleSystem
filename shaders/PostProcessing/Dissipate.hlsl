@@ -41,7 +41,7 @@ PSOutput Main(PSInput input)
     
     float4 sumColour = float4(0,0,0,0);
     float sumValue = 0;
-    float4 magnitude = 1.0;
+    float4 magnitude = 0.99999;
     
     [unroll]
     for (int i = 0; i < 9;++i)

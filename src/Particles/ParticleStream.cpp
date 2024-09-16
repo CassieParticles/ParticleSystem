@@ -1,4 +1,4 @@
-#include "ParticleEmitter.h"
+#include "ParticleStream.h"
 
 #include <iostream>
 #include <engine/D3DObjects/Device.h>
@@ -7,7 +7,7 @@
 
 #include <engine/Engine/Random.h>
 
-ParticleEmitter::ParticleEmitter(DirectX::XMFLOAT2 position, float interval, float particleLifeTime, float particleSpeed, DirectX::XMFLOAT3 colour) :position{ position },emmisionTimer { interval }, particleSpeed{ particleSpeed }
+ParticleStream::ParticleStream(DirectX::XMFLOAT2 position, float interval, float particleLifeTime, float particleSpeed, DirectX::XMFLOAT3 colour) :position{ position },emmisionTimer { interval }, particleSpeed{ particleSpeed }
 {
 	//Get the maximum number of particles
 	particleCount = ceil(particleLifeTime / interval);
@@ -103,13 +103,13 @@ ParticleEmitter::ParticleEmitter(DirectX::XMFLOAT2 position, float interval, flo
 	delete[] particleColours;
 }
 
-ParticleEmitter::~ParticleEmitter()
+ParticleStream::~ParticleStream()
 {
 	delete[] particlePositions;
 	delete[] particleVelocities;
 }
 
-void ParticleEmitter::render()
+void ParticleStream::render()
 {
 	//Pipeline should already be bound
 	ID3D11Buffer* buffers[3]
@@ -137,7 +137,7 @@ void ParticleEmitter::render()
 	Device::Instance()->getDeviceContext()->DrawIndexedInstanced(6, firstIteration ? particleCount : currentParticleReset, 0, 0, 0);
 }
 
-void ParticleEmitter::update(TimeManager* timeManager)
+void ParticleStream::update(TimeManager* timeManager)
 {
 	emmisionTimer.Tick();
 	

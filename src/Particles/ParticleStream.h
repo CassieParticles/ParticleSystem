@@ -8,13 +8,13 @@
 #include <engine/Engine/Timer.h>
 #include <engine/D3DObjects/Pipeline/Pipeline.h>
 
-class ParticleEmitter
+class ParticleStream
 {
 	template <typename T>
 	using ComPtr = Microsoft::WRL::ComPtr<T>;
 public:
-	ParticleEmitter(DirectX::XMFLOAT2 position, float interval, float particleLifeTime, float particleSpeed, DirectX::XMFLOAT3 colour);
-	~ParticleEmitter();
+	ParticleStream(DirectX::XMFLOAT2 position, float interval, float particleLifeTime, float particleSpeed, DirectX::XMFLOAT3 colour);
+	~ParticleStream();
 
 	void render();
 	void update(TimeManager* timeManager);
