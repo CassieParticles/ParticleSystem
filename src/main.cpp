@@ -14,6 +14,7 @@
 
 #include <engine/DataManagers/CBufferManager.h>
 #include <engine/DataManagers/AssetLoader.h>
+#include <engine/DataManagers/ShaderManager.h>
 
 #include "Particles/ParticleRenderer.h"
 #include "Particles/ParticleStream.h"
@@ -35,6 +36,7 @@ int main()
 	InputActionManager* inputActionManager = InputActionManager::Instance();
 	Random* random = Random::Instance();
 	AssetLoader* assetLoader = AssetLoader::Instance();
+	ShaderManager* shaderManager = ShaderManager::Instance();
 
 	random->setSeed(time(0));
 	float timeData[2] = {0,0};

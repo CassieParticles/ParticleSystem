@@ -1,12 +1,18 @@
 #include "ParticleRenderer.h"
 
 #include <engine/DataManagers/CBufferManager.h>
+#include <engine/DataManagers/ShaderManager.h>
+
 
 ParticleRenderer::ParticleRenderer()
 {
 	//Set up pipeline information
-	particlePipeline.addVertexShader(L"shaders/Particle/vertex.hlsl");
-	particlePipeline.addPixelShader(L"shaders/Particle/fragment.hlsl");
+	ShaderManager* shaderManager = ShaderManager::Instance();
+	shaderManager->addVertexShader("particleVertex", L"shaders/Particle/vertex.hlsl");
+	shaderManager->addPixelShader("particlePixel", L"shaders/Particle/fragment.hlsl");
+
+	particlePipeline.addVertexShader("particleVertex");
+	particlePipeline.addPixelShader("particlePixel");
 
 	particlePipeline.addVertexComponent({"VertexPosition",0,DXGI_FORMAT_R32G32_FLOAT,0,0,D3D11_INPUT_PER_VERTEX_DATA,0});
 	particlePipeline.addVertexComponent({"POSITION",0,DXGI_FORMAT_R32G32_FLOAT,1,0,D3D11_INPUT_PER_INSTANCE_DATA,1});
