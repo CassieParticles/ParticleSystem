@@ -53,11 +53,10 @@ int main()
 	TimeManager timeManager;
 	timeManager.setUniversalTimeManager();
 
-	
-
 
 	particleManager.addParticleStream(DirectX::XMFLOAT2(4, 4), 0, 3.14159 / 4, 0.1, 3, 3, DirectX::XMFLOAT3(1, 0, 0));
-	particleManager.addParticleStream(DirectX::XMFLOAT2(6, 4), 3.14159, 3.14159 / 4, 0.2, 5, 2, DirectX::XMFLOAT3(0, 1, 0));
+	particleManager.addParticleStream(DirectX::XMFLOAT2(6, 4), 3.14159, 3.14159 / 4, 0.05, 5, 2, DirectX::XMFLOAT3(0, 1, 0));
+	particleManager.addParticleStream(DirectX::XMFLOAT2(5, 5), 3.14159 * 3 / 2, 3.14159 / 4, 0.075, 4, 5, DirectX::XMFLOAT3(0, 0, 1));
 
 	timeManager.Start();
 
